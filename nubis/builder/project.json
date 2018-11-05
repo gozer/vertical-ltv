@@ -3,9 +3,9 @@
     "builders": [
       "amazon-ebs-centos"
     ],
-    "project_description": "Vertical ETL Host",
+    "project_description": "Vertical LTV Host",
     "project_name": "vertical-ltv",
-    "project_version": "v2.3.0_{{env `GIT_COMMIT_SHA`}}",
-    "source_ami_project_version": "v2.3.0"
+    "project_version": "v2.3.1_{{env `GIT_COMMIT_SHA`}}",
+    "source_ami_project_version": "v2.3.1"
   }
 }
