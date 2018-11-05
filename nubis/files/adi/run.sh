@@ -2,6 +2,6 @@
 
 set -e
 
-/opt/etl/adi/fetch
+/opt/ltv/adi/fetch
 
-/opt/etl/adi/load
+/opt/ltv/adi/load

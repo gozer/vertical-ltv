@@ -20,23 +20,23 @@ python::pyvenv { "${virtualenv_path}/boomi" :
   ],
 }
 
-file { '/opt/etl/boomi':
+file { '/opt/ltv/boomi':
   ensure  => directory,
   require => [
-    File['/opt/etl'],
+    File['/opt/ltv'],
   ]
 }
 
-file { '/var/lib/etl/boomi':
+file { '/var/lib/ltv/boomi':
   ensure  => directory,
-  owner   => 'etl',
-  group   => 'etl',
+  owner   => 'ltv',
+  group   => 'ltv',
   mode    => '0755',
 
   require => [
-    User['etl'],
-    Group['etl'],
-    File['/var/lib/etl'],
+    User['ltv'],
+    Group['ltv'],
+    File['/var/lib/ltv'],
   ]
 }
 

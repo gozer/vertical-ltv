@@ -17,7 +17,7 @@ PROCESS_MONTH=$(date --date="7 day ago" +%Y-%m-%d +"%m")
 
 FOLDER="adi_by_region/year=$PROCESS_YEAR/month=$PROCESS_MONTH/"
 
-APP_DIR=/var/lib/etl/$FOLDER # log directory to put files
+APP_DIR=/var/lib/ltv/$FOLDER # log directory to put files
 
 export AWS_ACCESS_KEY_ID=${ADI_AccessKey:?}
 export AWS_SECRET_ACCESS_KEY=${ADI_SecretKey:?}

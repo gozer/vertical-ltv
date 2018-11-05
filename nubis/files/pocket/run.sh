@@ -2,7 +2,7 @@
 
 set -e
 
-/opt/etl/pocket/fetch
+/opt/ltv/pocket/fetch
 
-/opt/etl/pocket/load
+/opt/ltv/pocket/load
 

@@ -3,7 +3,7 @@
 export PATH=/usr/local/bin:$PATH
 
 # Import from Workday
-/opt/etl/peopleteam_dashboard_monthly/fetch
+/opt/ltv/peopleteam_dashboard_monthly/fetch
 
 # Load into Vertica
-/opt/etl/peopleteam_dashboard_monthly/load
+/opt/ltv/peopleteam_dashboard_monthly/load

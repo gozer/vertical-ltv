@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 # The default nagios/datacenters that run if no args are provided.
 nagios_dc = ['nagios3.private.scl3.mozilla.com', 'nagios1.private.corp.phx1.mozilla.com', 'nagios1.private.scl3.mozilla.com', 'nagios1.private.phx1.mozilla.com', 'nagios2.private.scl3.mozilla.com']
 # Used inconjunction with default args
-default_path = '/var/lib/etl/nagios'
+default_path = '/var/lib/ltv/nagios'
 
 cnxn = pyodbc.connect("DSN=vertica", autocommit=False)
 

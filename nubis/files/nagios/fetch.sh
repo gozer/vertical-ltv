@@ -14,7 +14,7 @@ declare Nagios_Bucket Nagios_AccessKey Nagios_SecretKey
 # default is to process for the previous days data
 PROCESS_DATE=$(date --date="1 day ago" +%Y-%m-%d) # YYYY-MM-DD
 
-APP_DIR=/var/lib/etl/nagios # log directory to put files
+APP_DIR=/var/lib/ltv/nagios # log directory to put files
 
 export AWS_ACCESS_KEY_ID=${Nagios_AccessKey:?}
 export AWS_SECRET_ACCESS_KEY=${Nagios_SecretKey:?}

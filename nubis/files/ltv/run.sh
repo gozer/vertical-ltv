@@ -5,17 +5,17 @@ export PATH=/usr/local/virtualenvs/ltv/bin:$PATH
 
 set -e
 
-/opt/etl/ltv/fetch
+/opt/ltv/ltv/fetch
 
-/opt/etl/ltv/load_client_details
+/opt/ltv/ltv/load_client_details
 
-/opt/etl/ltv/load_search_history
+/opt/ltv/ltv/load_search_history
 
-#/opt/etl/ltv/test_ltv_calc_v1
-/opt/etl/ltv/ltv_calc_v1
+#/opt/ltv/ltv/test_ltv_calc_v1
+/opt/ltv/ltv/ltv_calc_v1
 
-/opt/etl/ltv/ltv_aggr_v1
+/opt/ltv/ltv/ltv_aggr_v1
 
-/opt/etl/ltv/create_files
+/opt/ltv/ltv/create_files
 
-/opt/etl/ltv/push_to_gcp
+/opt/ltv/ltv/push_to_gcp

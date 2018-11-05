@@ -2,5 +2,5 @@
 
 set -e
 
-/opt/etl/search/fetch "$@"
-/opt/etl/search/load "$@"
+/opt/ltv/search/fetch "$@"
+/opt/ltv/search/load "$@"

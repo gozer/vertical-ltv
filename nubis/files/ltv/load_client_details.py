@@ -70,7 +70,7 @@ def read_meta(input_file):
   
   
 def main():
-    input_dir = '/var/lib/etl/ltv/client_details/'
+    input_dir = '/var/lib/ltv/ltv/client_details/'
     # get all files in folder starting with part-*
     #input_fns = glob.glob(input_dir + 'part-*'), key=os.path.getctime)
     input_fns = glob.glob(input_dir + 'part-*')

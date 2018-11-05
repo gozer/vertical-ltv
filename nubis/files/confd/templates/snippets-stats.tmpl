@@ -1,6 +1,6 @@
 config = {
   'proxies'               : {"https" : "http://proxy.service.consul:3128"},
-  'snippets_dir'          : '/var/lib/etl/snippets-stats',
+  'snippets_dir'          : '/var/lib/ltv/snippets-stats',
   'geoip_db_loc'          : '{{ getv "/config/GeoIP/DBLocation/Country" "/usr/share/GeoIP/GeoIP2-Country.mmdb" }}',
   's3_snippets_bucket'    : '{{ getv "/config/SnippetsStats/S3Bucket" "s3-bucket-not-set" }}',
   's3_snippets_path'      : '{{ getv "/config/SnippetsStats/S3BucketPath" "s3-bucket-path-not-set" }}',

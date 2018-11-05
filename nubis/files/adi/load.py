@@ -66,7 +66,7 @@ def read_meta(input_file):
   return {'row_count' : row_count}
 
 def main(start_date, end_date):
-    input_file = '/var/lib/etl/adi/' + start_date.strftime('%Y-%m-%d') + '/output'
+    input_file = '/var/lib/ltv/adi/' + start_date.strftime('%Y-%m-%d') + '/output'
     vertica_table_name = 'copy_adi_dimensional_by_date'
 
     # process/transform/aggregate input data

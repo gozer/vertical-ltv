@@ -1,6 +1,6 @@
 [template]
 src = "boomi.tmpl"
-dest = "/home/etl/.ssh/boomi"
+dest = "/home/ltv/.ssh/boomi"
 prefix = "/%%PROJECT%%-%%ENVIRONMENT%%/%%ENVIRONMENT%%"
 
 uid = 994

@@ -17,7 +17,7 @@ export AWS_ACCESS_KEY_ID=$Churn_AccessKey
 CURRENT_DATE=$(date +%Y-%m-%d)
 BUCKET="s3://$Churn_Bucket/$Churn_BucketPath"
 
-BASE_DIR=/var/lib/etl/churn
+BASE_DIR=/var/lib/ltv/churn
 
 LOCAL_FILES_DIR=$BASE_DIR/work
 

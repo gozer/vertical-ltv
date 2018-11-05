@@ -6,22 +6,22 @@ python::pyvenv { "${virtualenv_path}/fx-sentiment" :
   ],
 }
 
-vcsrepo { '/opt/etl/fx-sentiment':
+vcsrepo { '/opt/ltv/fx-sentiment':
   ensure   => present,
   provider => 'git',
   source   => 'https://github.com/mozilla-it/fx-sentiment-analysis.git',
   require  => [
-    File['/opt/etl'],
+    File['/opt/ltv'],
   ],
 }
 
 # Install fx-sentiment dependencies
 python::requirements { 'fx-sentiment':
-  requirements => '/opt/etl/fx-sentiment/RequiredPackages.txt',
+  requirements => '/opt/ltv/fx-sentiment/RequiredPackages.txt',
   forceupdate  => true,
   virtualenv   => "${virtualenv_path}/fx-sentiment",
   require      => [
-    Vcsrepo['/opt/etl/fx-sentiment'],
+    Vcsrepo['/opt/ltv/fx-sentiment'],
     Python::Pyvenv["${virtualenv_path}/fx-sentiment"],
   ],
 }
@@ -30,20 +30,20 @@ python::requirements { 'fx-sentiment':
   logoutput => true,
 }
 
-file { '/opt/etl/fx-sentiment':
+file { '/opt/ltv/fx-sentiment':
   ensure  => directory,
   require => [
-    File['/opt/etl'],
+    File['/opt/ltv'],
   ]
 }
 
-file { '/opt/etl/fx-sentiment/run':
+file { '/opt/ltv/fx-sentiment/run':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/fx-sentiment'],
+    File['/opt/ltv/fx-sentiment'],
   ],
   source  => 'puppet:///nubis/files/fx-sentiment/run.sh',
 }

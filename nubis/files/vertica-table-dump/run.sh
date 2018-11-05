@@ -2,7 +2,7 @@
 
 export PATH=/usr/local/bin:/opt/vertica/bin:$PATH
 
-TMPDIR=/var/lib/etl/vertica-table-dump
+TMPDIR=/var/lib/ltv/vertica-table-dump
 
 NUBIS_ENVIRONMENT=$(nubis-metadata NUBIS_ENVIRONMENT)
 NUBIS_PROJECT=$(nubis-metadata NUBIS_PROJECT)

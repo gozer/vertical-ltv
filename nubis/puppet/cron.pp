@@ -1,33 +1,33 @@
 # holding user for all jobs
 
-group { 'etl':
+group { 'ltv':
   ensure => present,
   system => true,
   gid    => 991,
 }
 
-user { 'etl':
+user { 'ltv':
   ensure     => present,
   system     => true,
-  gid        => 'etl',
+  gid        => 'ltv',
   uid	     => 994,
   managehome => true,
 }
 
-file { '/home/etl/.ssh':
+file { '/home/ltv/.ssh':
   ensure => 'directory',
   mode   => '0700',
   require => [
-    User['etl'],
-    Group['etl'],
+    User['ltv'],
+    Group['ltv'],
   ]
 }
 
-file { '/var/lib/etl':
+file { '/var/lib/ltv':
   ensure => 'directory',
 }
 
-file { '/opt/etl':
+file { '/opt/ltv':
   ensure => directory,
 }
 
@@ -35,25 +35,25 @@ file { '/opt/etl':
 
 file { '/var/data-collectors':
   ensure  => directory,
-  owner   => 'etl',
-  group   => 'etl',
+  owner   => 'ltv',
+  group   => 'ltv',
   mode    => '0755',
 
   require => [
-    User['etl'],
-    Group['etl'],
+    User['ltv'],
+    Group['ltv'],
   ]
 }
 
-file { '/home/etl/.ssh':
+file { '/home/ltv/.ssh':
   ensure  => directory,
-  owner   => 'etl',
-  group   => 'etl',
+  owner   => 'ltv',
+  group   => 'ltv',
   mode    => '0700',
 
   require => [
-    User['etl'],
-    Group['etl'],
+    User['ltv'],
+    Group['ltv'],
   ]
 }
 
@@ -61,6 +61,6 @@ file { '/home/etl/.ssh':
 cron::daily { "${project_name}-snapshot":
   hour    => '6',
   minute  => fqdn_rand(60),
-  user    => 'etl',
-  command => "nubis-cron ${project_name}-snapshot /usr/local/bin/nubis-etl-snapshot save",
+  user    => 'ltv',
+  command => "nubis-cron ${project_name}-snapshot /usr/local/bin/nubis-ltv-snapshot save",
 }

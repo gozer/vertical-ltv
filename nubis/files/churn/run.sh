@@ -2,5 +2,5 @@
 
 set -e
 
-/opt/etl/churn/fetch "$@"
-/opt/etl/churn/call_load "$@"
+/opt/ltv/churn/fetch "$@"
+/opt/ltv/churn/call_load "$@"

@@ -1,6 +1,6 @@
 cron::weekly { "${project_name}-peopleteam-dashboard":
-  user    => 'etl',
-  command => "nubis-cron ${project_name}-peopleteam_dashboard /opt/etl/peopleteam_dashboard/run",
+  user    => 'ltv',
+  command => "nubis-cron ${project_name}-peopleteam_dashboard /opt/ltv/peopleteam_dashboard/run",
   hour    => 16,
   weekday => 6,
 }
@@ -13,66 +13,66 @@ file { '/usr/local/bin/peopleteam-dashboard-fetcher':
   ],
 }
 
-file { '/opt/etl/peopleteam_dashboard':
+file { '/opt/ltv/peopleteam_dashboard':
   ensure  => directory,
   require => [
-    File['/opt/etl'],
+    File['/opt/ltv'],
   ]
 }
 
-file { '/var/lib/etl/peopleteam_dashboard':
+file { '/var/lib/ltv/peopleteam_dashboard':
   ensure  => directory,
-  owner   => 'etl',
-  group   => 'etl',
+  owner   => 'ltv',
+  group   => 'ltv',
   mode    => '0755',
 
   require => [
-    User['etl'],
-    Group['etl'],
-    File['/var/lib/etl'],
+    User['ltv'],
+    Group['ltv'],
+    File['/var/lib/ltv'],
   ]
 }
 
-file { '/opt/etl/peopleteam_dashboard/fetch':
+file { '/opt/ltv/peopleteam_dashboard/fetch':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/peopleteam_dashboard'],
+    File['/opt/ltv/peopleteam_dashboard'],
   ],
   source  => 'puppet:///nubis/files/peopleteam_dashboard/fetch.sh',
 }
 
-file { '/opt/etl/peopleteam_dashboard/load':
+file { '/opt/ltv/peopleteam_dashboard/load':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/peopleteam_dashboard'],
+    File['/opt/ltv/peopleteam_dashboard'],
   ],
   source  => 'puppet:///nubis/files/peopleteam_dashboard/load.sh',
 }
 
-file { '/opt/etl/peopleteam_dashboard/load.yml':
+file { '/opt/ltv/peopleteam_dashboard/load.yml':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/peopleteam_dashboard'],
+    File['/opt/ltv/peopleteam_dashboard'],
   ],
   source  => 'puppet:///nubis/files/peopleteam_dashboard/load.yml',
 }
 
-file { '/opt/etl/peopleteam_dashboard/run':
+file { '/opt/ltv/peopleteam_dashboard/run':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/peopleteam_dashboard'],
+    File['/opt/ltv/peopleteam_dashboard'],
   ],
   source  => 'puppet:///nubis/files/peopleteam_dashboard/run.sh',
 }

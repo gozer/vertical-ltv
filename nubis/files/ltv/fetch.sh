@@ -14,7 +14,7 @@ declare LTV_Bucket LTV_AccessKey LTV_SecretKey LTV_SampleId
 # process current dates in file (data in file should be up to previous date)
 PROCESS_DATE=$(date +%Y%m%d) #YYYYMMDD
 
-APP_DIR=/var/lib/etl/ltv # log directory to put files
+APP_DIR=/var/lib/ltv/ltv # log directory to put files
 
 export AWS_ACCESS_KEY_ID=${LTV_AccessKey:?}
 export AWS_SECRET_ACCESS_KEY=${LTV_SecretKey:?}

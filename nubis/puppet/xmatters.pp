@@ -1,6 +1,6 @@
 cron::daily { "${project_name}-xmatters":
-  user    => 'etl',
-  command => "nubis-cron ${project_name}-xmatters /opt/etl/xmatters/run",
+  user    => 'ltv',
+  command => "nubis-cron ${project_name}-xmatters /opt/ltv/xmatters/run",
 }
 
 file { '/usr/local/bin/xmatters_sync':
@@ -11,20 +11,20 @@ file { '/usr/local/bin/xmatters_sync':
   ],
 }
 
-file { '/opt/etl/xmatters':
+file { '/opt/ltv/xmatters':
   ensure  => directory,
   require => [
-    File['/opt/etl'],
+    File['/opt/ltv'],
   ]
 }
 
-file { '/opt/etl/xmatters/run':
+file { '/opt/ltv/xmatters/run':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/xmatters'],
+    File['/opt/ltv/xmatters'],
   ],
   source  => 'puppet:///nubis/files/xmatters/run.sh',
 }

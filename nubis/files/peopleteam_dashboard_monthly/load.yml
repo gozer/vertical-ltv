@@ -5,13 +5,13 @@ file_spec:
 
 tables:
   - name: workday_employees_monthly
-    path: "/var/lib/etl/peopleteam_dashboard_monthly/headcount_{date}.csv"
+    path: "/var/lib/ltv/peopleteam_dashboard_monthly/headcount_{date}.csv"
     truncate: False
     delete_before_insert:
       field: date
       value: "{date}"
   - name: workday_hires_monthly
-    path: "/var/lib/etl/peopleteam_dashboard_monthly/hires_{date}.csv"
+    path: "/var/lib/ltv/peopleteam_dashboard_monthly/hires_{date}.csv"
     truncate: False
     delete_before_insert:
       field: snapshot_date
@@ -69,7 +69,7 @@ tables:
       snapshot_date_trash FILLER VARCHAR(1),
       snapshot_date AS '{date}'
   - name: workday_terminations_monthly
-    path: "/var/lib/etl/peopleteam_dashboard_monthly/terminations_{date}.csv"
+    path: "/var/lib/ltv/peopleteam_dashboard_monthly/terminations_{date}.csv"
     truncate: False
     delete_before_insert:
       field: snapshot_date
@@ -130,7 +130,7 @@ tables:
       snapshot_date_trash FILLER VARCHAR(1),
       snapshot_date AS '{date}'
   - name: workday_promotions_monthly
-    path: "/var/lib/etl/peopleteam_dashboard_monthly/promotions_{date}.csv"
+    path: "/var/lib/ltv/peopleteam_dashboard_monthly/promotions_{date}.csv"
     truncate: False
     delete_before_insert:
       field: snapshot_date

@@ -1,66 +1,66 @@
 cron::daily { "${project_name}-workday":
   hour    => '1',
   minute  => fqdn_rand(60),
-  user    => 'etl',
-  command => "nubis-cron ${project_name}-workday /opt/etl/workday/fetch",
+  user    => 'ltv',
+  command => "nubis-cron ${project_name}-workday /opt/ltv/workday/fetch",
 }
 
 cron::daily { "${project_name}-workday-plus":
   hour    => '5',
   minute  => fqdn_rand(60),
-  user    => 'etl',
-  command => "nubis-cron ${project_name}-workday-plus /opt/etl/workday/fetch_plus",
+  user    => 'ltv',
+  command => "nubis-cron ${project_name}-workday-plus /opt/ltv/workday/fetch_plus",
 }
 
-file { '/opt/etl/workday':
+file { '/opt/ltv/workday':
   ensure  => directory,
   require => [
-    File['/opt/etl'],
+    File['/opt/ltv'],
   ]
 }
 
-file { '/var/lib/etl/workday':
+file { '/var/lib/ltv/workday':
   ensure  => directory,
-  owner   => 'etl',
-  group   => 'etl',
+  owner   => 'ltv',
+  group   => 'ltv',
   mode    => '0755',
 
   require => [
-    User['etl'],
-    Group['etl'],
-    File['/var/lib/etl'],
+    User['ltv'],
+    Group['ltv'],
+    File['/var/lib/ltv'],
   ]
 }
 
-file { '/opt/etl/workday/workday.py':
+file { '/opt/ltv/workday/workday.py':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0644',
   require => [
-    File['/opt/etl/workday'],
+    File['/opt/ltv/workday'],
   ],
   source  => 'puppet:///nubis/files/workday/workday.py',
 }
 
-file { '/opt/etl/workday/fetch':
+file { '/opt/ltv/workday/fetch':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/workday'],
+    File['/opt/ltv/workday'],
   ],
   source  => 'puppet:///nubis/files/workday/fetch_workday_data.py',
 }
 
-file { '/opt/etl/workday/fetch_plus':
+file { '/opt/ltv/workday/fetch_plus':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/workday'],
+    File['/opt/ltv/workday'],
   ],
   source  => 'puppet:///nubis/files/workday/fetch_workday_data_plus.py',
 }

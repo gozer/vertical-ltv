@@ -4,9 +4,9 @@ file_spec:
   skip_header: True
 
 tables:
-  sf_contact_history: "/var/lib/etl/salesforce/contact_history/{date}/output.csv"
-  sf_donations: "/var/lib/etl/salesforce/contact_donor_count/{date}/output.csv"
-  sf_foundation_signups: "/var/lib/etl/salesforce/foundation_signups/{date}/output.csv"
-  sf_donation_count: "/var/lib/etl/salesforce/donation_record_count/{date}/output.csv"
-  sf_copyright_petition: "/var/lib/etl/salesforce/petition_signups/{date}/output.csv"
-  sf_contacts: "/var/lib/etl/salesforce/contacts/{date}/output.csv"
+  sf_contact_history: "/var/lib/ltv/salesforce/contact_history/{date}/output.csv"
+  sf_donations: "/var/lib/ltv/salesforce/contact_donor_count/{date}/output.csv"
+  sf_foundation_signups: "/var/lib/ltv/salesforce/foundation_signups/{date}/output.csv"
+  sf_donation_count: "/var/lib/ltv/salesforce/donation_record_count/{date}/output.csv"
+  sf_copyright_petition: "/var/lib/ltv/salesforce/petition_signups/{date}/output.csv"
+  sf_contacts: "/var/lib/ltv/salesforce/contacts/{date}/output.csv"

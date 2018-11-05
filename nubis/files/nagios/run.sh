@@ -2,6 +2,6 @@
 
 set -e
 
-/opt/etl/nagios/fetch
+/opt/ltv/nagios/fetch
 
-/opt/etl/nagios/load
+/opt/ltv/nagios/load

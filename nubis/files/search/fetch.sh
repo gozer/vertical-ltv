@@ -41,9 +41,9 @@ export AWS_ACCESS_KEY_ID=$Search_AccessKey
 
 BUCKET="s3://$Search_Bucket/$Search_BucketPath"
 
-LOCAL_FILES_DIR=/var/lib/etl/search/work/$SCOPE
+LOCAL_FILES_DIR=/var/lib/ltv/search/work/$SCOPE
 
-XFER_FILE_DIR=/var/lib/etl/search/$SCOPE
+XFER_FILE_DIR=/var/lib/ltv/search/$SCOPE
 
 #
 # Create $LOCAL_FILES_DIR

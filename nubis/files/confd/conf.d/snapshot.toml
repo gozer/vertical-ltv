@@ -1,6 +1,6 @@
 [template]
 src = "snapshot.tmpl"
-dest = "/usr/local/bin/nubis-etl-snapshot"
+dest = "/usr/local/bin/nubis-ltv-snapshot"
 prefix = "/%%PROJECT%%-%%ENVIRONMENT%%/%%ENVIRONMENT%%"
 
 uid = 0

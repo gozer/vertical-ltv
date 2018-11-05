@@ -1,6 +1,6 @@
 cron::daily { "${project_name}-salesforce":
-  user    => 'etl',
-  command => "nubis-cron ${project_name}-salesforce /opt/etl/salesforce/run",
+  user    => 'ltv',
+  command => "nubis-cron ${project_name}-salesforce /opt/ltv/salesforce/run",
   hour    => 9,
 }
 
@@ -56,87 +56,87 @@ file { '/usr/local/bin/vertica-csv-loader':
 
 file { '/var/log/vertica-csv-loader':
   ensure  => directory,
-  owner   => 'etl',
-  group   => 'etl',
+  owner   => 'ltv',
+  group   => 'ltv',
   mode    => '0755',
 
   require => [
-    User['etl'],
-    Group['etl'],
+    User['ltv'],
+    Group['ltv'],
   ]
 }
 
-file { '/opt/etl/salesforce':
+file { '/opt/ltv/salesforce':
   ensure  => directory,
   require => [
-    File['/opt/etl'],
+    File['/opt/ltv'],
   ]
 }
 
-file { '/var/lib/etl/salesforce':
+file { '/var/lib/ltv/salesforce':
   ensure  => directory,
-  owner   => 'etl',
-  group   => 'etl',
+  owner   => 'ltv',
+  group   => 'ltv',
   mode    => '0755',
 
   require => [
-    User['etl'],
-    Group['etl'],
-    File['/var/lib/etl'],
+    User['ltv'],
+    Group['ltv'],
+    File['/var/lib/ltv'],
   ]
 }
 
-file { '/opt/etl/salesforce/fetch':
+file { '/opt/ltv/salesforce/fetch':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/salesforce'],
+    File['/opt/ltv/salesforce'],
   ],
   source  => 'puppet:///nubis/files/salesforce/fetch.sh',
 }
 
-file { '/opt/etl/salesforce/load':
+file { '/opt/ltv/salesforce/load':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/salesforce'],
+    File['/opt/ltv/salesforce'],
   ],
   source  => 'puppet:///nubis/files/salesforce/load.sh',
 }
 
-file { '/opt/etl/salesforce/sfdc_populate_sf_summary_table.py':
+file { '/opt/ltv/salesforce/sfdc_populate_sf_summary_table.py':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/salesforce'],
+    File['/opt/ltv/salesforce'],
   ],
   source  => 'puppet:///nubis/files/salesforce/sfdc_populate_sf_summary_table.py',
 }
 
-file { '/opt/etl/salesforce/load.yml':
+file { '/opt/ltv/salesforce/load.yml':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/salesforce'],
+    File['/opt/ltv/salesforce'],
   ],
   source  => 'puppet:///nubis/files/salesforce/load.yml',
 }
 
-file { '/opt/etl/salesforce/run':
+file { '/opt/ltv/salesforce/run':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/salesforce'],
+    File['/opt/ltv/salesforce'],
   ],
   source  => 'puppet:///nubis/files/salesforce/run.sh',
 }

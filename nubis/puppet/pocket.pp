@@ -1,59 +1,59 @@
 cron::daily { "${project_name}-pocket":
   hour    => '10',
   minute  => fqdn_rand(60),
-  user    => 'etl',
-  command => "nubis-cron ${project_name}-pocket /opt/etl/pocket/run",
+  user    => 'ltv',
+  command => "nubis-cron ${project_name}-pocket /opt/ltv/pocket/run",
 }
 
-file { '/opt/etl/pocket':
+file { '/opt/ltv/pocket':
   ensure  => directory,
   require => [
-    File['/opt/etl'],
+    File['/opt/ltv'],
   ]
 }
 
-file { '/var/lib/etl/pocket':
+file { '/var/lib/ltv/pocket':
   ensure  => directory,
-  owner   => 'etl',
-  group   => 'etl',
+  owner   => 'ltv',
+  group   => 'ltv',
   mode    => '0755',
 
   require => [
-    User['etl'],
-    Group['etl'],
-    File['/var/lib/etl'],
+    User['ltv'],
+    Group['ltv'],
+    File['/var/lib/ltv'],
   ]
 }
 
-file { '/opt/etl/pocket/fetch':
+file { '/opt/ltv/pocket/fetch':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/pocket'],
+    File['/opt/ltv/pocket'],
   ],
   source  => 'puppet:///nubis/files/pocket/fetch.sh',
 }
 
-file { '/opt/etl/pocket/load':
+file { '/opt/ltv/pocket/load':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/pocket'],
+    File['/opt/ltv/pocket'],
   ],
   source  => 'puppet:///nubis/files/pocket/load.py',
 }
 
-file { '/opt/etl/pocket/run':
+file { '/opt/ltv/pocket/run':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/pocket'],
+    File['/opt/ltv/pocket'],
   ],
   source  => 'puppet:///nubis/files/pocket/run.sh',
 }

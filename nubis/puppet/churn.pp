@@ -2,70 +2,70 @@ cron::weekly { "${project_name}-churn":
   weekday => '3',
   hour    => '21',
   minute  => fqdn_rand(60),
-  user    => 'etl',
-  command => "nubis-cron ${project_name}-churn /opt/etl/churn/run",
+  user    => 'ltv',
+  command => "nubis-cron ${project_name}-churn /opt/ltv/churn/run",
 }
 
-file { '/opt/etl/churn':
+file { '/opt/ltv/churn':
   ensure  => directory,
   require => [
-    File['/opt/etl'],
+    File['/opt/ltv'],
   ]
 }
 
-file { '/var/lib/etl/churn':
+file { '/var/lib/ltv/churn':
   ensure  => directory,
-  owner   => 'etl',
-  group   => 'etl',
+  owner   => 'ltv',
+  group   => 'ltv',
   mode    => '0755',
 
   require => [
-    User['etl'],
-    Group['etl'],
-    File['/var/lib/etl'],
+    User['ltv'],
+    Group['ltv'],
+    File['/var/lib/ltv'],
   ]
 }
 
-file { '/opt/etl/churn/fetch':
+file { '/opt/ltv/churn/fetch':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/churn'],
+    File['/opt/ltv/churn'],
   ],
   source  => 'puppet:///nubis/files/churn/fetch.sh',
 }
 
-file { '/opt/etl/churn/call_load':
+file { '/opt/ltv/churn/call_load':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/churn'],
+    File['/opt/ltv/churn'],
   ],
   source  => 'puppet:///nubis/files/churn/call_load.sh',
 }
 
-file { '/opt/etl/churn/load':
+file { '/opt/ltv/churn/load':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/churn'],
+    File['/opt/ltv/churn'],
   ],
   source  => 'puppet:///nubis/files/churn/load.py',
 }
 
-file { '/opt/etl/churn/run':
+file { '/opt/ltv/churn/run':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/churn'],
+    File['/opt/ltv/churn'],
   ],
   source  => 'puppet:///nubis/files/churn/run.sh',
 }

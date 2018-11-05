@@ -1,6 +1,6 @@
 cron::daily { "${project_name}-salesforce_sfmc":
-  user    => 'etl',
-  command => "nubis-cron ${project_name}-salesforce_sfmc /opt/etl/salesforce_sfmc/run",
+  user    => 'ltv',
+  command => "nubis-cron ${project_name}-salesforce_sfmc /opt/ltv/salesforce_sfmc/run",
   hour    => 18,
 }
 
@@ -29,77 +29,77 @@ file { '/usr/local/bin/sfmc-fetcher':
   ],
 }
 
-file { '/opt/etl/salesforce_sfmc':
+file { '/opt/ltv/salesforce_sfmc':
   ensure  => directory,
   require => [
-    File['/opt/etl'],
+    File['/opt/ltv'],
   ]
 }
 
-file { '/var/lib/etl/salesforce_sfmc':
+file { '/var/lib/ltv/salesforce_sfmc':
   ensure  => directory,
-  owner   => 'etl',
-  group   => 'etl',
+  owner   => 'ltv',
+  group   => 'ltv',
   mode    => '0755',
 
   require => [
-    User['etl'],
-    Group['etl'],
-    File['/var/lib/etl'],
+    User['ltv'],
+    Group['ltv'],
+    File['/var/lib/ltv'],
   ]
 }
 
-file { '/opt/etl/salesforce_sfmc/fetch':
+file { '/opt/ltv/salesforce_sfmc/fetch':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/salesforce_sfmc'],
+    File['/opt/ltv/salesforce_sfmc'],
   ],
   source  => 'puppet:///nubis/files/salesforce_sfmc/fetch.sh',
 }
 
-file { '/opt/etl/salesforce_sfmc/load':
+file { '/opt/ltv/salesforce_sfmc/load':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/salesforce_sfmc'],
+    File['/opt/ltv/salesforce_sfmc'],
   ],
   source  => 'puppet:///nubis/files/salesforce_sfmc/load.sh',
 }
 
-file { '/opt/etl/salesforce_sfmc/populate_sfmc_send_jobs_unique_table.py':
+file { '/opt/ltv/salesforce_sfmc/populate_sfmc_send_jobs_unique_table.py':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/salesforce_sfmc'],
+    File['/opt/ltv/salesforce_sfmc'],
   ],
   source  => 'puppet:///nubis/files/salesforce_sfmc/populate_sfmc_send_jobs_unique_table.py',
 }
 
-file { '/opt/etl/salesforce_sfmc/load.yml':
+file { '/opt/ltv/salesforce_sfmc/load.yml':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/salesforce_sfmc'],
+    File['/opt/ltv/salesforce_sfmc'],
   ],
   source  => 'puppet:///nubis/files/salesforce_sfmc/load.yml',
 }
 
-file { '/opt/etl/salesforce_sfmc/run':
+file { '/opt/ltv/salesforce_sfmc/run':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/salesforce_sfmc'],
+    File['/opt/ltv/salesforce_sfmc'],
   ],
   source  => 'puppet:///nubis/files/salesforce_sfmc/run.sh',
 }

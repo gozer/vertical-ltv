@@ -57,7 +57,7 @@ def query_vertica(query):
 
 
 def main():
-    input_dir = '/var/lib/etl/pocket/'
+    input_dir = '/var/lib/ltv/pocket/'
     # get the most recent file in input_dir
     input_fn = max(
         glob.glob(input_dir + 'mobile_active_counts_*'), key=os.path.getctime)

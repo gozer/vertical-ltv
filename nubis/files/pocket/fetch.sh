@@ -19,7 +19,7 @@ FOLDER=${Pocket_AWSFolder:pocket-mobile-active-counts}
 
 OBJECT="$(aws s3 ls "s3://$BUCKET/$FOLDER/" | grep "mobile_active_counts_" | sort | tail -n 1 | awk '{print $4}')"
 
-APP_DIR=/var/lib/etl/pocket
+APP_DIR=/var/lib/ltv/pocket
 
 rm -f $APP_DIR/mobile_active_counts_*
 

@@ -69,8 +69,8 @@ def read_meta(input_file):
 def main(curr_dt):
     yr = curr_dt.strftime('%Y')
     mnth = curr_dt.strftime('%m')
-    input_file_init = '/var/lib/etl/adi_by_region/year=' + yr + '/month=' + mnth + '/output'
-    input_file = '/var/lib/etl/adi_by_region/year=' + yr + '/month=' + mnth + '/output_noquotes'
+    input_file_init = '/var/lib/ltv/adi_by_region/year=' + yr + '/month=' + mnth + '/output'
+    input_file = '/var/lib/ltv/adi_by_region/year=' + yr + '/month=' + mnth + '/output_noquotes'
     # remove double quotes from field values
     reader = csv.reader(open(input_file_init, "rb"), skipinitialspace=True)
     with open(input_file,'wb') as myfile:

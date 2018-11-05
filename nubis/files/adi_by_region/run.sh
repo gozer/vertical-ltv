@@ -2,7 +2,7 @@
 
 set -e
 
-/opt/etl/adi_by_region/fetch
+/opt/ltv/adi_by_region/fetch
 
 # Run for previous month
-/opt/etl/adi_by_region/load $(date --date="7 day ago" +%Y-%m-%d)
+/opt/ltv/adi_by_region/load $(date --date="7 day ago" +%Y-%m-%d)

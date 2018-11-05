@@ -1,59 +1,59 @@
 cron::daily { "${project_name}-adi":
   hour    => '14',
   minute  => fqdn_rand(60),
-  user    => 'etl',
-  command => "nubis-cron ${project_name}-adi /opt/etl/adi/run",
+  user    => 'ltv',
+  command => "nubis-cron ${project_name}-adi /opt/ltv/adi/run",
 }
 
-file { '/opt/etl/adi':
+file { '/opt/ltv/adi':
   ensure  => directory,
   require => [
-    File['/opt/etl'],
+    File['/opt/ltv'],
   ]
 }
 
-file { '/var/lib/etl/adi':
+file { '/var/lib/ltv/adi':
   ensure  => directory,
-  owner   => 'etl',
-  group   => 'etl',
+  owner   => 'ltv',
+  group   => 'ltv',
   mode    => '0755',
 
   require => [
-    User['etl'],
-    Group['etl'],
-    File['/var/lib/etl'],
+    User['ltv'],
+    Group['ltv'],
+    File['/var/lib/ltv'],
   ]
 }
 
-file { '/opt/etl/adi/fetch':
+file { '/opt/ltv/adi/fetch':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/adi'],
+    File['/opt/ltv/adi'],
   ],
   source  => 'puppet:///nubis/files/adi/fetch.sh',
 }
 
-file { '/opt/etl/adi/load':
+file { '/opt/ltv/adi/load':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/adi'],
+    File['/opt/ltv/adi'],
   ],
   source  => 'puppet:///nubis/files/adi/load.py',
 }
 
-file { '/opt/etl/adi/run':
+file { '/opt/ltv/adi/run':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/adi'],
+    File['/opt/ltv/adi'],
   ],
   source  => 'puppet:///nubis/files/adi/run.sh',
 }

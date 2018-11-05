@@ -1,6 +1,6 @@
 [template]
 src = "sfmc-fetcher.tmpl"
-dest = "/opt/etl/salesforce_sfmc/secrets_brickftp.py"
+dest = "/opt/ltv/salesforce_sfmc/secrets_brickftp.py"
 prefix = "/%%PROJECT%%-%%ENVIRONMENT%%/%%ENVIRONMENT%%"
 
 uid = 0

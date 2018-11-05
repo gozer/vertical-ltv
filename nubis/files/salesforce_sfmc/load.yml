@@ -5,7 +5,7 @@ file_spec:
 
 tables:
   - name: sfmc_events
-    path: "/var/lib/etl/salesforce_sfmc/{date}/Clicks.csv"
+    path: "/var/lib/ltv/salesforce_sfmc/{date}/Clicks.csv"
     truncate: False
     delete_before_insert: True
     fields: >
@@ -14,7 +14,7 @@ tables:
         event_type, send_url_id, url_id, url, alias, batch_id,
         triggered_send_external_key, source_file AS '{path}'
   - name: sfmc_events
-    path: "/var/lib/etl/salesforce_sfmc/{date}/Opens.csv"
+    path: "/var/lib/ltv/salesforce_sfmc/{date}/Opens.csv"
     truncate: False
     delete_before_insert: True
     fields: >
@@ -23,7 +23,7 @@ tables:
         event_type, send_url_id AS NULL, url_id AS NULL, url AS '', alias AS '',
         batch_id, triggered_send_external_key, source_file AS '{path}'
   - name: sfmc_events
-    path: "/var/lib/etl/salesforce_sfmc/{date}/Sent.csv"
+    path: "/var/lib/ltv/salesforce_sfmc/{date}/Sent.csv"
     truncate: False
     delete_before_insert: True
     fields: >
@@ -32,7 +32,7 @@ tables:
         event_type, send_url_id AS NULL, url_id AS NULL, url AS '', alias AS '',
         batch_id, triggered_send_external_key, source_file AS '{path}'
   - name: sfmc_events
-    path: "/var/lib/etl/salesforce_sfmc/{date}/Bounces.csv"
+    path: "/var/lib/ltv/salesforce_sfmc/{date}/Bounces.csv"
     truncate: False
     delete_before_insert: True
     fields: >
@@ -42,7 +42,7 @@ tables:
         smtp_code FILLER VARCHAR(1), bounce_reason FILLER VARCHAR(1),
         batch_id, triggered_send_external_key, source_file AS '{path}'
   - name: sfmc_send_jobs
-    path: "/var/lib/etl/salesforce_sfmc/{date}/SendJobs.csv"
+    path: "/var/lib/ltv/salesforce_sfmc/{date}/SendJobs.csv"
     truncate: False
     delete_before_insert: True
     fields: >
@@ -51,7 +51,7 @@ tables:
         send_definition_external_key, job_status, preview_url, is_multipart,
         additional, source_file AS '{path}'
   - name: sfmc_subscribers
-    path: "/var/lib/etl/salesforce_sfmc/{date}/Subscribers.csv"
+    path: "/var/lib/ltv/salesforce_sfmc/{date}/Subscribers.csv"
     truncate: False
     delete_before_insert: True
     fields: >

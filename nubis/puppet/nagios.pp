@@ -1,59 +1,59 @@
 cron::daily { "${project_name}-nagios":
   hour    => '7',
   minute  => fqdn_rand(60),
-  user    => 'etl',
-  command => "nubis-cron ${project_name}-nagios /opt/etl/nagios/run",
+  user    => 'ltv',
+  command => "nubis-cron ${project_name}-nagios /opt/ltv/nagios/run",
 }
 
-file { '/opt/etl/nagios':
+file { '/opt/ltv/nagios':
   ensure  => directory,
   require => [
-    File['/opt/etl'],
+    File['/opt/ltv'],
   ]
 }
 
-file { '/var/lib/etl/nagios':
+file { '/var/lib/ltv/nagios':
   ensure  => directory,
-  owner   => 'etl',
-  group   => 'etl',
+  owner   => 'ltv',
+  group   => 'ltv',
   mode    => '0755',
 
   require => [
-    User['etl'],
-    Group['etl'],
-    File['/var/lib/etl'],
+    User['ltv'],
+    Group['ltv'],
+    File['/var/lib/ltv'],
   ]
 }
 
-file { '/opt/etl/nagios/fetch':
+file { '/opt/ltv/nagios/fetch':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/nagios'],
+    File['/opt/ltv/nagios'],
   ],
   source  => 'puppet:///nubis/files/nagios/fetch.sh',
 }
 
-file { '/opt/etl/nagios/load':
+file { '/opt/ltv/nagios/load':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/nagios'],
+    File['/opt/ltv/nagios'],
   ],
   source  => 'puppet:///nubis/files/nagios/load.py',
 }
 
-file { '/opt/etl/nagios/run':
+file { '/opt/ltv/nagios/run':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/nagios'],
+    File['/opt/ltv/nagios'],
   ],
   source  => 'puppet:///nubis/files/nagios/run.sh',
 }

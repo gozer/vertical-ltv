@@ -14,7 +14,7 @@ declare ADI_Folder ADI_Bucket ADI_AccessKey ADI_SecretKey
 # default is to process for the previous days data
 PROCESS_DATE=$(date --date="1 day ago" +%Y-%m-%d) # YYYY-MM-DD
 
-APP_DIR=/var/lib/etl/adi # log directory to put files
+APP_DIR=/var/lib/ltv/adi # log directory to put files
 FOLDER=${ADI_Folder:-blpadi}
 
 export AWS_ACCESS_KEY_ID=${ADI_AccessKey:?}

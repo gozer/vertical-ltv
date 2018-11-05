@@ -1,6 +1,6 @@
 cron::daily { "${project_name}-snippets-stats":
-  user    => 'etl',
-  command => "nubis-cron ${project_name}-snippets-stats /opt/etl/snippets-stats/run",
+  user    => 'ltv',
+  command => "nubis-cron ${project_name}-snippets-stats /opt/ltv/snippets-stats/run",
   hour    => 8,
 }
 
@@ -45,55 +45,55 @@ file { '/usr/local/bin/get_snippets_logs':
   ],
 }
 
-file { '/opt/etl/snippets-stats':
+file { '/opt/ltv/snippets-stats':
   ensure  => directory,
   require => [
-    File['/opt/etl'],
+    File['/opt/ltv'],
   ]
 }
 
-file { '/var/lib/etl/snippets-stats':
+file { '/var/lib/ltv/snippets-stats':
   ensure  => directory,
-  owner   => 'etl',
-  group   => 'etl',
+  owner   => 'ltv',
+  group   => 'ltv',
   mode    => '0755',
 
   require => [
-    User['etl'],
-    Group['etl'],
-    File['/var/lib/etl'],
+    User['ltv'],
+    Group['ltv'],
+    File['/var/lib/ltv'],
   ]
 }
 
-file { '/opt/etl/snippets-stats/fetch':
+file { '/opt/ltv/snippets-stats/fetch':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/snippets-stats'],
+    File['/opt/ltv/snippets-stats'],
   ],
   source  => 'puppet:///nubis/files/snippets-stats/fetch.sh',
 }
 
-file { '/opt/etl/snippets-stats/load':
+file { '/opt/ltv/snippets-stats/load':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/snippets-stats'],
+    File['/opt/ltv/snippets-stats'],
   ],
   source  => 'puppet:///nubis/files/snippets-stats/load.sh',
 }
 
-file { '/opt/etl/snippets-stats/run':
+file { '/opt/ltv/snippets-stats/run':
   ensure  => present,
   owner   => root,
   group   => root,
   mode    => '0755',
   require => [
-    File['/opt/etl/snippets-stats'],
+    File['/opt/ltv/snippets-stats'],
   ],
   source  => 'puppet:///nubis/files/snippets-stats/run.sh',
 }

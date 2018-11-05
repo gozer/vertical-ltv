@@ -45,8 +45,8 @@ fi
 
 echo "[${FETCH_DATE}]"
 
-XFER_FILE_DIR=/var/lib/etl/search/$SCOPE/processed-$FETCH_DATE.csv.gz
+XFER_FILE_DIR=/var/lib/ltv/search/$SCOPE/processed-$FETCH_DATE.csv.gz
 
 set -e
 
-"/opt/etl/search/load-$SCOPE" -f "$XFER_FILE_DIR"
+"/opt/ltv/search/load-$SCOPE" -f "$XFER_FILE_DIR"
