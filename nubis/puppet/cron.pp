@@ -14,15 +14,6 @@ user { 'ltv':
   managehome => true,
 }
 
-file { '/home/ltv/.ssh':
-  ensure => 'directory',
-  mode   => '0700',
-  require => [
-    User['ltv'],
-    Group['ltv'],
-  ]
-}
-
 file { '/var/lib/ltv':
   ensure => 'directory',
 }
@@ -38,18 +29,6 @@ file { '/var/data-collectors':
   owner   => 'ltv',
   group   => 'ltv',
   mode    => '0755',
-
-  require => [
-    User['ltv'],
-    Group['ltv'],
-  ]
-}
-
-file { '/home/ltv/.ssh':
-  ensure  => directory,
-  owner   => 'ltv',
-  group   => 'ltv',
-  mode    => '0700',
 
   require => [
     User['ltv'],
