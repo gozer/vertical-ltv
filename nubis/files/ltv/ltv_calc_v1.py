@@ -33,10 +33,84 @@ from lifetimes import GammaGammaFitter
 
 from itertools import izip_longest
 import psutil
+import multiprocessing
 
 logger = logging.getLogger(__name__)
-process = psutil.Process(os.getpid())
 
+CONCURRENCY=8
+CHUNK_SIZE=250000
+
+DISTINCT_CLIENTS_QUERY="""
+SELECT DISTINCT client_id
+FROM ut_clients_search_history
+WHERE sap>0
+ORDER BY client_id
+"""
+
+CLIENT_HIST_QUERY_REVENUE_VAR="""
+SELECT client_id,
+       submission_date_s3,
+       sap,
+       sap*rev_per_search AS Revenue
+FROM
+  (SELECT *
+   FROM
+     (SELECT *,
+             rank() OVER (PARTITION BY client_id,
+                                       submission_date_s3
+                          ORDER BY revdt DESC) rankdt
+      FROM
+        (SELECT hist_country.client_id,
+                hist_country.submission_date_s3,
+                to_char(submission_date_s3, 'YYYYMM')::int AS submdt,
+                hist_country.sap,
+                rev.yyyymm::int revdt,
+                rev.rev_per_search
+         FROM (
+                 (SELECT hist.*,
+                         deets.country
+                  FROM
+                    (SELECT *
+                     FROM ut_clients_search_history
+                     WHERE sap>0
+                       AND client_id IN ({client_list})) hist
+                  LEFT JOIN
+                    (SELECT client_id,
+                            country
+                     FROM ut_clients_daily_details) deets ON hist.client_id=deets.client_id) hist_country
+               FULL OUTER JOIN ut_country_revenue rev ON hist_country.country=rev.country_code)) sap_rev
+      GROUP BY client_id,
+               submission_date_s3,
+               sap,
+               submdt,
+               revdt,
+               rev_per_search
+      HAVING revdt <= submdt) ranked
+   WHERE rankdt=1) t
+"""
+
+CLIENT_HIST_QUERY_REVENUE_CONST="""
+SELECT client_id,
+       submission_date_s3,
+       sap,
+       sap*.005 AS Revenue
+FROM
+  (SELECT hist.*,
+          deets.country
+   FROM
+     (SELECT *
+      FROM ut_clients_search_history
+      WHERE sap>0
+        AND client_id IN ({client_list})) hist
+   LEFT JOIN
+     (SELECT client_id,
+             country
+      FROM ut_clients_daily_details) deets ON hist.client_id=deets.client_id) t1
+WHERE country NOT IN
+    (SELECT distinct(country_code)
+     FROM ut_country_revenue)
+  OR country IS NULL
+"""
 
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
@@ -48,6 +122,41 @@ def calc_alive_prob(row, model):
     r = row['recency']
     t = row['T']
     return model.conditional_probability_alive(f,r,t)
+
+def process_chunk(output, group):
+    process = psutil.Process(os.getpid())
+
+    with open(output, 'a') as f:
+         name = multiprocessing.current_process().name
+         print("[{}] Processing loop to {}".format(name, output))
+         print(process.memory_info().rss)
+         tmp = map(lambda x: str(x[0]), filter(None, group))
+
+         #print CLIENT_HIST_QUERY_REVENUE_CONST.format( client_list = str(tmp)[1:-1] )
+
+         df_var = util.query_vertica_df( CLIENT_HIST_QUERY_REVENUE_VAR.format( client_list = str(tmp)[1:-1] ) )
+         df_const = util.query_vertica_df( CLIENT_HIST_QUERY_REVENUE_CONST.format( client_list = str(tmp)[1:-1] ) )
+
+         df = df_var.append(df_const, ignore_index=True)
+
+         print("[{}] Finished loading data from Vertica,  {} rows".format(name, df.size))
+
+         # name columns
+         df.columns = ["client_id","activity_date","Searches","Revenue"]
+         # Will have to clean dataset (search clients or clients daily) to remove 0 or None searches? or set them 0
+         df['Searches']=df['Searches'].replace('None', 0)
+         df['Searches']=pd.to_numeric(df['Searches'])
+         #df['Revenue']=df['Searches']*df['Revenue']
+
+         df_final = generate_clv_table(df)
+         df_final.customer_age = df_final.customer_age.astype(int)
+         df_final.historical_searches = df_final.historical_searches.astype(int)
+         df_final.days_since_last_active = df_final.days_since_last_active.astype(int)
+
+         df_final = df_final[['frequency','recency','customer_age','avg_session_value','predicted_searches_14_days','alive_probability','predicted_clv_12_months','historical_searches','historical_clv','total_clv','days_since_last_active','user_status','calc_date']]
+         df_final.to_csv(f, sep='|', header=False, encoding='utf-8')
+         print("completed loop")
+         logger.debug("completed loop")
 
 def generate_clv_table(data, clv_prediction_time=None, model_penalizer=None):
 
@@ -196,50 +305,33 @@ def main():
     vertica_input_table_name = 'ut_clients_search_history'
     vertica_output_table_name = 'ut_clients_ltv'
 
+    process = psutil.Process(os.getpid())
+
     # clear out ltv table
     util.query_vertica("TRUNCATE TABLE ut_clients_ltv; COMMIT;")
 
     start = time.clock()
 
     # pull distinct (hash) client_id from ut_clients_daily with non-zero search history
-    distinct_clients_query = ("SELECT distinct client_id from ut_clients_search_history where sap>0 order by client_id;")
-    client_hist_query_revenue_var = ("select client_id, submission_date_s3, sap, sap*rev_per_search as Revenue from (select * from (select *, rank() over (partition by client_id, submission_date_s3 order by revdt desc) rankdt from (select hist_country.client_id, hist_country.submission_date_s3, to_char(submission_date_s3,'YYYYMM')::int as submdt, hist_country.sap, rev.yyyymm::int revdt, rev.rev_per_search from ( (select hist.*,deets.country from (select * from ut_clients_search_history where sap>0 and client_id in ( {client_list} )) hist left join (select client_id, country from ut_clients_daily_details) deets on hist.client_id=deets.client_id) hist_country full outer join ut_country_revenue rev on hist_country.country=rev.country_code) ) sap_rev group by client_id, submission_date_s3, sap, submdt, revdt, rev_per_search having revdt <= submdt) ranked where rankdt=1) t;")
-    client_hist_query_revenue_const = ("select client_id, submission_date_s3, sap, sap*.005 as Revenue from ( select hist.*,deets.country from (select * from ut_clients_search_history where sap>0 and client_id in ( {client_list} )) hist left join (select client_id, country from ut_clients_daily_details) deets on hist.client_id=deets.client_id) t1 where country not in (select distinct(country_code) from ut_country_revenue) or country is null;")
-
-    field_order = ['client_id','frequency','recency','customer_age','avg_session_value','predicted_searches_14_days','alive_probability','predicted_clv_12_months','historical_searches','historical_clv','total_clv','days_since_last_active','user_status','calc_date']
-
-    client_ids = util.query_vertica(distinct_clients_query)
+    client_ids = util.query_vertica(DISTINCT_CLIENTS_QUERY)
 
     print(process.memory_info().rss)
+
+    # Could be a derived number from internal set knoledge
+    # (i.e. ( Total RAM - Safety constant ) / chunk required RAM
+    pool = multiprocessing.Pool(processes=CONCURRENCY)
+
     fo = 'fileout.csv'
-    with open(fo, 'a') as f:
-      for group in grouper(client_ids, 250000):
-         print(process.memory_info().rss)
-         tmp = map(lambda x: str(x[0]), filter(None, group))
-         # print client_hist_query.format( client_list = str(tmp)[1:-1] ) 
+    for group in grouper(client_ids, CHUNK_SIZE):
+       pool.apply_async(process_chunk, (fo, group,))
 
-         df_var = util.query_vertica_df( client_hist_query_revenue_var.format( client_list = str(tmp)[1:-1] ) )
-         df_const = util.query_vertica_df( client_hist_query_revenue_const.format( client_list = str(tmp)[1:-1] ) )
-         df = df_var.append(df_const, ignore_index=True)
+    # All work has been submitted, plan for shutdown
+    pool.close()
 
-         # name columns
-         df.columns = ["client_id","activity_date","Searches","Revenue"]
-         # Will have to clean dataset (search clients or clients daily) to remove 0 or None searches? or set them 0
-         df['Searches']=df['Searches'].replace('None', 0)
-         df['Searches']=pd.to_numeric(df['Searches'])
-         #df['Revenue']=df['Searches']*df['Revenue']
+    # Wait for all workers to complete their work cleanly
+    pool.join()
 
-         df_final = generate_clv_table(df)
-         df_final.customer_age = df_final.customer_age.astype(int)
-         df_final.historical_searches = df_final.historical_searches.astype(int)
-         df_final.days_since_last_active = df_final.days_since_last_active.astype(int)
-
-         df_final = df_final[['frequency','recency','customer_age','avg_session_value','predicted_searches_14_days','alive_probability','predicted_clv_12_months','historical_searches','historical_clv','total_clv','days_since_last_active','user_status','calc_date']]
-         df_final.to_csv(f, sep='|', header=False, encoding='utf-8')
-
-         logger.debug("completed loop")
-
-
+    field_order = ['client_id','frequency','recency','customer_age','avg_session_value','predicted_searches_14_days','alive_probability','predicted_clv_12_months','historical_searches','historical_clv','total_clv','days_since_last_active','user_status','calc_date']
     util.load_into_vertica(fo,vertica_output_table_name,delimiter='|',field_order = field_order)
 
     elapsed = (time.clock() - start)
@@ -251,17 +343,13 @@ def main():
 
 
 if __name__ == '__main__':
-
-  try:
-    logging.basicConfig(format = '%(asctime)s %(name)s:%(levelname)s: %(message)s',
+  logging.basicConfig(format = '%(asctime)s %(name)s:%(levelname)s: %(message)s',
                       level = logging.DEBUG)
 
+  try:
     main()
 
   except:
-    logging.basicConfig(format = '%(asctime)s %(name)s:%(levelname)s: %(message)s',
-                        level = logging.DEBUG)
     logger.exception("error in running ETL")
-
     sys.exit(1)
 
