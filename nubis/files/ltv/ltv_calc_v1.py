@@ -13,6 +13,7 @@ import glob
 from datetime import date, timedelta, datetime
 from collections import namedtuple
 import urlparse
+import humanize
 
 #import pyodbc
 import util
@@ -35,7 +36,7 @@ from itertools import izip_longest
 import psutil
 import multiprocessing
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("ltv")
 
 CONCURRENCY=8
 CHUNK_SIZE=250000
@@ -87,6 +88,7 @@ FROM
                rev_per_search
       HAVING revdt <= submdt) ranked
    WHERE rankdt=1) t
+ORDER BY client_id
 """
 
 CLIENT_HIST_QUERY_REVENUE_CONST="""
@@ -110,6 +112,7 @@ WHERE country NOT IN
     (SELECT distinct(country_code)
      FROM ut_country_revenue)
   OR country IS NULL
+ORDER BY client_id
 """
 
 def grouper(iterable, n, fillvalue=None):
@@ -124,29 +127,39 @@ def calc_alive_prob(row, model):
     return model.conditional_probability_alive(f,r,t)
 
 def process_chunk(output, group):
-    process = psutil.Process(os.getpid())
-
-    with open(output, 'a') as f:
-         name = multiprocessing.current_process().name
-         print("[{}] Processing loop to {}".format(name, output))
-         print(process.memory_info().rss)
+    name = multiprocessing.current_process().name
+    logger = logging.getLogger("ltv/{}".format(name))
+    try:
+         logger.debug("Processing a chunk to {}".format(output))
          tmp = map(lambda x: str(x[0]), filter(None, group))
 
-         #print CLIENT_HIST_QUERY_REVENUE_CONST.format( client_list = str(tmp)[1:-1] )
-
          df_var = util.query_vertica_df( CLIENT_HIST_QUERY_REVENUE_VAR.format( client_list = str(tmp)[1:-1] ) )
+         logger.debug("Loaded variable data from Vertica: {} rows".format(humanize.intword(df_var.size)))
+
          df_const = util.query_vertica_df( CLIENT_HIST_QUERY_REVENUE_CONST.format( client_list = str(tmp)[1:-1] ) )
+         logger.debug("Loaded constant data from Vertica: {} rows".format(humanize.intword(df_const.size)))
 
          df = df_var.append(df_const, ignore_index=True)
 
-         print("[{}] Finished loading data from Vertica,  {} rows".format(name, df.size))
+         logger.debug("Finished loading data from Vertica: {} rows".format(humanize.intword(df.size)))
 
          # name columns
          df.columns = ["client_id","activity_date","Searches","Revenue"]
-         # Will have to clean dataset (search clients or clients daily) to remove 0 or None searches? or set them 0
-         df['Searches']=df['Searches'].replace('None', 0)
-         df['Searches']=pd.to_numeric(df['Searches'])
-         #df['Revenue']=df['Searches']*df['Revenue']
+
+         # Squeeze out a little for better memory usage
+         df['Searches']=pd.to_numeric(df['Searches'], downcast='unsigned')
+         df['Revenue']=pd.to_numeric(df['Revenue'], downcast='float')
+
+         #The library functions require the activity date to be in a date format
+         df['activity_date'] = pd.to_datetime(df['activity_date'],format='%Y-%m-%d')
+
+         # This would be a big save, but must be done on input and sql is no good for that
+         # Doing it here requires more RAM then we are likely to have, unfortunately.
+         #df['client_id'] = df['client_id'].astype('category')
+
+         logger.debug("Input Dataframe size : {}".format(humanize.naturalsize(df.memory_usage(deep=True).sum())))
+
+         logger.debug("Computing clv table")
 
          df_final = generate_clv_table(df)
          df_final.customer_age = df_final.customer_age.astype(int)
@@ -154,9 +167,17 @@ def process_chunk(output, group):
          df_final.days_since_last_active = df_final.days_since_last_active.astype(int)
 
          df_final = df_final[['frequency','recency','customer_age','avg_session_value','predicted_searches_14_days','alive_probability','predicted_clv_12_months','historical_searches','historical_clv','total_clv','days_since_last_active','user_status','calc_date']]
-         df_final.to_csv(f, sep='|', header=False, encoding='utf-8')
-         print("completed loop")
-         logger.debug("completed loop")
+
+         logger.debug("Output Dataframe size : {}".format(humanize.naturalsize(df_final.memory_usage(deep=True).sum())))
+
+         logger.debug("Writing to {}: {} rows".format(output, humanize.intword(len(df_final))))
+
+         with open(output, 'a') as f:
+           df_final.to_csv(f, sep='|', header=False, encoding='utf-8')
+
+         logger.debug("Completed chunk")
+    except Exception as e:
+      logging.exception(e)
 
 def generate_clv_table(data, clv_prediction_time=None, model_penalizer=None):
 
@@ -168,9 +189,6 @@ def generate_clv_table(data, clv_prediction_time=None, model_penalizer=None):
     
     # Reformat csv as a Pandas dataframe
     #data = pd.read_csv(csv_file)
-
-    #The library functions require the activity date to be in a date format
-    data['activity_date'] = pd.to_datetime(data['activity_date'], format='%Y-%m-%d')
 
     #Remove non search sessions
     data = data[data['Searches']>0]
@@ -322,13 +340,29 @@ def main():
     pool = multiprocessing.Pool(processes=CONCURRENCY)
 
     fo = 'fileout.csv'
+
+    # Truncate the file first
+    with open(fo, "w") as f:
+        f.truncate()
+
+    logger.info("Starting real work with {} workers in chunks of {} clients".format(CONCURRENCY, CHUNK_SIZE))
+
+    workers = []
     for group in grouper(client_ids, CHUNK_SIZE):
-       pool.apply_async(process_chunk, (fo, group,))
+        # No point in multiprocessing if we aren't concurrent
+        if CONCURRENCY == 1:
+            process_chunk(fo,group)
+        # Add to our async work queue
+        else:
+            workers.append(pool.apply_async(process_chunk, (fo, group,)))
 
     # All work has been submitted, plan for shutdown
+    logger.debug("Closing work queue")
     pool.close()
 
     # Wait for all workers to complete their work cleanly
+    logger.debug("Waiting for all workers to complete cleanly")
+    logger.debug("Total jobs : {}".format(len(workers)))
     pool.join()
 
     field_order = ['client_id','frequency','recency','customer_age','avg_session_value','predicted_searches_14_days','alive_probability','predicted_clv_12_months','historical_searches','historical_clv','total_clv','days_since_last_active','user_status','calc_date']
@@ -343,8 +377,12 @@ def main():
 
 
 if __name__ == '__main__':
+  loglevel = getattr(logging, os.getenv("LOG_LEVEL", "DEBUG").upper(), None)
+  if not isinstance(loglevel, int):
+    raise ValueError('Invalid log level: %s' % loglevel)
+
   logging.basicConfig(format = '%(asctime)s %(name)s:%(levelname)s: %(message)s',
-                      level = logging.DEBUG)
+                      level = loglevel)
 
   try:
     main()
