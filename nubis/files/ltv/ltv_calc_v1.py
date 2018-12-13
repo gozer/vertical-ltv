@@ -12,7 +12,6 @@ import time
 import glob
 from datetime import date, timedelta, datetime
 from collections import namedtuple
-import urlparse
 import humanize
 
 #import pyodbc
@@ -36,7 +35,7 @@ from itertools import izip_longest
 import psutil
 import multiprocessing
 
-logger = logging.getLogger("ltv")
+logger = logging.getLogger("ltv/main")
 
 CONCURRENCY=8
 CHUNK_SIZE=250000
@@ -115,6 +114,8 @@ WHERE country NOT IN
 ORDER BY client_id
 """
 
+write_lock = multiprocessing.Lock()
+
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
     return izip_longest(*args, fillvalue=fillvalue)
@@ -172,8 +173,9 @@ def process_chunk(output, group):
 
          logger.debug("Writing to {}: {} rows".format(output, humanize.intword(len(df_final))))
 
-         with open(output, 'a') as f:
-           df_final.to_csv(f, sep='|', header=False, encoding='utf-8')
+         with write_lock:
+            with open(output, 'a') as f:
+                df_final.to_csv(f, sep='|', header=False, encoding='utf-8')
 
          logger.debug("Completed chunk")
     except Exception as e:
