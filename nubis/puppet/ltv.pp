@@ -8,7 +8,7 @@ cron::weekly { "${project_name}-ltv":
 
 python::virtualenv { "${virtualenv_path}/ltv" :
   ensure      => present,
-  virtualenv  => 'virtualenv-3',
+  virtualenv  => 'virtualenv',
   environment => [
     'VIRTUALENV_PYTHON=python2.7',
   ],
