@@ -21,7 +21,7 @@ export AWS_SECRET_ACCESS_KEY=${LTV_SecretKey:?}
 
 echo "s3://${LTV_Bucket:?}/nawong/cdv6s${LTV_SampleId:?}_"$PROCESS_DATE
 echo "$APP_DIR/client_details"
-echo "s3://${LTV_Bucket:?}/nawong/scdv5s${LTV_SampleId:?}_"$PROCESS_DATE
+echo "s3://${LTV_Bucket:?}/nawong/scdv6s${LTV_SampleId:?}_"$PROCESS_DATE
 
 aws s3 sync "s3://${LTV_Bucket:?}/nawong/cdv6s${LTV_SampleId:?}_"$PROCESS_DATE "$APP_DIR/client_details" --delete
 aws s3 sync "s3://${LTV_Bucket:?}/nawong/scdv6s${LTV_SampleId:?}_hist_"$PROCESS_DATE "$APP_DIR/scd" --delete
