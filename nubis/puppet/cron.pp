@@ -22,20 +22,6 @@ file { '/opt/ltv':
   ensure => directory,
 }
 
-# Temporary holding location for data-collectors
-
-file { '/var/data-collectors':
-  ensure  => directory,
-  owner   => 'ltv',
-  group   => 'ltv',
-  mode    => '0755',
-
-  require => [
-    User['ltv'],
-    Group['ltv'],
-  ]
-}
-
 # Cleanup and archive data files
 cron::daily { "${project_name}-snapshot":
   hour    => '6',
